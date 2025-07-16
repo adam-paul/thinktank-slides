@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Image Slides</title>
+
+    <!-- Reveal.js CSS from CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+
+    <!-- Optional: Add custom styles for better image fitting if needed -->
+    <style>
+        /* Ensure backgrounds cover the slide properly */
+        .reveal section {
+            background-size: contain; /* Or 'cover' if you want to fill the slide, potentially cropping */
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Slide 99 -->
+            <section data-background-image="slides/99.jpg">
+            </section>
+
+            <!-- Slide 98 -->
+            <section data-background-image="slides/98.jpg">
+            </section>
+
+            <!-- Slide 97 -->
+            <section data-background-image="slides/97.jpg">
+            </section>
+
+            <!-- Slide 96 -->
+            <section data-background-image="slides/96.jpg">
+            </section>
+
+            <!-- Slide 95 -->
+            <section data-background-image="slides/95.jpg">
+            </section>
+        </div>
+    </div>
+
+    <!-- Reveal.js JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            // Configuration options
+            controls: true, // Show navigation controls
+            progress: true, // Show progress bar
+            history: true, // Enable slide navigation via browser history
+            center: true, // Center slides vertically
+            touch: true, // Enable touch navigation on mobile
+            overview: true, // Enable overview mode (press Esc)
+            transition: 'slide', // Transition style: none/fade/slide/convex/concave/zoom
+
+            // Adjust background defaults if needed
+            backgroundTransition: 'fade',
+
+            // More options can be added as needed: https://revealjs.com/config/
+        });
+    </script>
+</body>
+</html>
