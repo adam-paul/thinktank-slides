@@ -70,20 +70,31 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
             border: none;
             font-size: 24px;
             padding: 20px;
             cursor: pointer;
             pointer-events: auto;
-            transition: opacity 0.3s;
+            transition: all 0.3s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            opacity: 1;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .nav-button:active {
-            opacity: 0.5;
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .nav-button.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .nav-button.prev {
@@ -101,31 +112,62 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 6px;
+            gap: 8px;
             pointer-events: auto;
             padding: 10px;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .progress.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: background 0.3s;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.2);
         }
 
         .dot.active {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.4);
+            width: 24px;
+            border-radius: 3px;
         }
 
         /* Mobile adjustments */
         @media (max-width: 768px) {
             .nav-button {
                 background: transparent;
+                color: rgba(255, 255, 255, 0.4);
                 font-size: 20px;
                 padding: 30px 15px;
+            }
+
+            .progress {
+                bottom: 15px;
+            }
+
+            .dot {
+                width: 5px;
+                height: 5px;
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .dot.active {
+                background: rgba(255, 255, 255, 0.3);
+                width: 20px;
             }
         }
 
@@ -157,7 +199,7 @@
 <body>
     <div class="slideshow" id="slideshow">
         <!-- Slides will be inserted here -->
-    </div>
+        </div>
 
     <div class="nav">
         <button class="nav-button prev" id="prevBtn" aria-label="Previous slide">‹</button>
@@ -186,6 +228,8 @@
         let touchStartX = 0;
         let touchStartY = 0;
         let touchStartTime = 0;
+        let hideControlsTimer = null;
+        let controlsVisible = true;
 
         // DOM elements
         const slideshow = document.getElementById('slideshow');
@@ -228,10 +272,40 @@
 
             // Preload adjacent images
             preloadAdjacentImages();
+
+            // Start auto-hide timer
+            startHideTimer();
+        }
+
+        // Control visibility functions
+        function showControls() {
+            if (!controlsVisible) {
+                controlsVisible = true;
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                progress.classList.remove('hidden');
+            }
+            startHideTimer();
+        }
+
+        function hideControls() {
+            controlsVisible = false;
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            progress.classList.add('hidden');
+        }
+
+        function startHideTimer() {
+            clearTimeout(hideControlsTimer);
+            hideControlsTimer = setTimeout(() => {
+                hideControls();
+            }, 3000); // Hide after 3 seconds of inactivity
         }
 
         // Navigation
         function navigate(direction) {
+            showControls();
+            
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
 
@@ -255,6 +329,8 @@
 
         function goToSlide(index) {
             if (index === currentIndex) return;
+            
+            showControls();
             
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
@@ -287,6 +363,23 @@
             slideshow.addEventListener('touchstart', handleTouchStart, { passive: true });
             slideshow.addEventListener('touchend', handleTouchEnd, { passive: true });
 
+            // Mouse movement
+            let mouseMoveTimer;
+            document.addEventListener('mousemove', () => {
+                showControls();
+                clearTimeout(mouseMoveTimer);
+                mouseMoveTimer = setTimeout(() => {
+                    // Debounce to avoid too many calls
+                }, 100);
+            });
+
+            // Touch on slideshow area
+            slideshow.addEventListener('click', (e) => {
+                if (e.target === slideshow || e.target.tagName === 'IMG') {
+                    showControls();
+                }
+            });
+
             // Hash changes
             window.addEventListener('hashchange', handleHashChange);
 
@@ -316,6 +409,7 @@
 
         // Touch handling
         function handleTouchStart(e) {
+            showControls();
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             touchStartTime = Date.now();
